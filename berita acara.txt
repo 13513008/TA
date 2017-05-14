@@ -1,0 +1,11 @@
+batasan tentang deteksi tangan (tangan kanan dan kiri)
+cek kecepatan transmisi bluetooth -> tambahkan di batasan tentang komunikasi dan bluetooth
+batasan UI 2 dimensi
+desain user interface dan feedback di smartphone
+pembagian fungsionalitas untuk komputer dan smartphone
+pada subbab pengujian perlu dilakukan pemecahan antar aspek pengujian
+
+arah ke virtual reality?
+implementasi sesuai spesifikasi?
+
+bagaimana mencocokkan gerakan pemain dalam 3d dengan tampilan 2d

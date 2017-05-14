@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{29C03888-8031-49B6-A638-402623ABE889}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NT</RootNamespace>
+    <AssemblyName>NT</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="IKVM.OpenJDK.Core">
+      <HintPath>..\..\..\..\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="rt">
+      <HintPath>..\..\..\rt.dll</HintPath>
+    </Reference>
+    <Reference Include="bluecove">
+      <HintPath>C:\Users\X200MA\Desktop\PC-Server\bluecove.dll</HintPath>
+    </Reference>
+    <Reference Include="PC-Server">
+      <HintPath>..\..\..\PC-Server\dist\PC-Server.dll</HintPath>
+    </Reference>
+    <Reference Include="jni4net.n.w64.v40-0.8.8.0">
+      <HintPath>..\..\..\..\jni4net\a\jni4net.n.w64.v40-0.8.8.0.dll</HintPath>
+    </Reference>
+    <Reference Include="jni4net.n-0.8.8.0">
+      <HintPath>..\..\..\..\jni4net\a\jni4net.n-0.8.8.0.dll</HintPath>
+    </Reference>
+    <Reference Include="jni4net.n.w32.v40-0.8.8.0">
+      <HintPath>..\..\..\..\jni4net\a\jni4net.n.w32.v40-0.8.8.0.dll</HintPath>
+    </Reference>
+    <Reference Include="PC-Server.j4n">
+      <HintPath>..\..\..\..\jni4net\a\PC-Server\PC-Server.j4n.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MyClass.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
