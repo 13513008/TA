@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: bfd8cfc24620bce44b71c73ec6867a3a
+timeCreated: 1494887232
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Batik Gangster
+  fontNames:
+  - Batik Gangster
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

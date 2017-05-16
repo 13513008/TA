@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Controller : MonoBehaviour {
-	public Text IP, Port, Name;
+	public Text IP, Name;
 	public GameObject Empty, NoConn, LoginP, PlayP, Master, AccelerometerI, GyroI, Loading, Background;
 	private NetworkView networkView;
 	private bool isMaster = false;
@@ -15,8 +15,7 @@ public class Controller : MonoBehaviour {
 	private int port;
 	private bool isConnected = false;
 	private bool disconnectRequest = false;
-	private bool accelerometer = true;
-	private bool gyro = true;
+	private bool maintainConnection = false;
 	private static bool isDetecting = false;
 	private static List<int[]> motions = new List<int[]>();
 	private static int[] motion = new int[6];
@@ -29,29 +28,24 @@ public class Controller : MonoBehaviour {
 		networkView = GetComponent<NetworkView>();
 		bColor = Background.GetComponent<Image>().color;
 		myIP = Network.player.ipAddress;
-		if (Input.acceleration.x == 0 && Input.acceleration.y == 0 && Input.acceleration.z == 0){
-			accelerometer = false;
-			AccelerometerI.SetActive(false);
-		}
-		if (Input.gyro.attitude.x == 0 && Input.gyro.attitude.y == 0 && Input.gyro.attitude.z == 0){
-			gyro = false;
-			GyroI.SetActive(false);
-		}
+		// if (Input.acceleration.x == 0 && Input.acceleration.y == 0 && Input.acceleration.z == 0){
+		// 	AccelerometerI.SetActive(false);
+		// }
+		// if (Input.gyro.attitude.x == 0 && Input.gyro.attitude.y == 0 && Input.gyro.attitude.z == 0){
+		// 	GyroI.SetActive(false);
+		// }
 	}
 
 	public void Login() {
 		if (ValidateForm()){
-			string ip = IP.GetComponent<Text>().text;
-			int port = Int32.Parse(Port.GetComponent<Text>().text);
 			StartCoroutine(Connecting());
 		}
 	}
 
 	public bool ValidateForm() {
 		string ip = IP.GetComponent<Text>().text;
-		string port = Port.GetComponent<Text>().text;
 		string name = Name.GetComponent<Text>().text;
-		if (ip == "" || port == "" || name == "") {
+		if (ip == "" || name == "") {
 			Empty.SetActive(true);
 			return false;
 		}
@@ -60,7 +54,7 @@ public class Controller : MonoBehaviour {
 
 	IEnumerator Connecting() {
 		ip = IP.GetComponent<Text>().text;
-		port = Int32.Parse(Port.GetComponent<Text>().text);
+		port = 4444;
 		name = Name.GetComponent<Text>().text;
 		Network.Connect(ip,port);
 		Loading.SetActive(true);
@@ -104,6 +98,8 @@ public class Controller : MonoBehaviour {
 		if(ip_ == myIP){
 			id = id_;
 			Play();
+			var maintainCon = new Thread(() => MaintainConnection());
+			maintainCon.Start();
 		}
 	}
 
@@ -201,23 +197,18 @@ public class Controller : MonoBehaviour {
 	}
 
 	[RPC]
-	public void SetColor(Color c, int id_) {
+	public void SetColor(float r, float g, float b, float a, int id_) {
 		if (id == id_)
-			Background.GetComponent<Image>().color = c;
+			Background.GetComponent<Image>().color = new Vector4(r,g,b,a);
 	}
 
 	public void Disconnect() {
-		IP.GetComponent<Text>().text = "";
-		Port.GetComponent<Text>().text = "";
-		Name.GetComponent<Text>().text = "";
 		isMaster = false;
 		id = -1;
 		ip = "";
 		name = "";
 		port = 0;
 		isConnected = false;
-		accelerometer = true;
-		gyro = true;
 		LoginP.SetActive(true);
 		PlayP.SetActive(false);
 		Master.SetActive(false);
@@ -249,6 +240,66 @@ public class Controller : MonoBehaviour {
 
 	[RPC]
 	public void ResponseConnection(int id_) {}
+
+	public void MaintainConnection() {
+		while (isConnected){
+			Thread.Sleep(5000);
+			maintainConnection = true;
+		}
+	}
+
+	public void SetSensorUI() {
+		for(int i = 0; i < 7; i++){
+			if(i == GetInterval(motion[0])){
+				AccelerometerI.transform.Find("X").transform.GetChild(i).gameObject.SetActive(true);
+			}else{
+				AccelerometerI.transform.Find("X").transform.GetChild(i).gameObject.SetActive(false);
+			}
+			if(i == GetInterval(motion[1])){
+				AccelerometerI.transform.Find("Y").transform.GetChild(i).gameObject.SetActive(true);
+			}else{
+				AccelerometerI.transform.Find("Y").transform.GetChild(i).gameObject.SetActive(false);
+			}
+			if(i == GetInterval(motion[2])){
+				AccelerometerI.transform.Find("Z").transform.GetChild(i).gameObject.SetActive(true);
+			}else{
+				AccelerometerI.transform.Find("Z").transform.GetChild(i).gameObject.SetActive(false);
+			}
+			if(i == GetInterval(motion[3])){
+				GyroI.transform.Find("X").transform.GetChild(i).gameObject.SetActive(true);
+			}else{
+				GyroI.transform.Find("X").transform.GetChild(i).gameObject.SetActive(false);
+			}
+			if(i == GetInterval(motion[4])){
+				GyroI.transform.Find("Y").transform.GetChild(i).gameObject.SetActive(true);
+			}else{
+				GyroI.transform.Find("Y").transform.GetChild(i).gameObject.SetActive(false);
+			}
+			if(i == GetInterval(motion[5])){
+				GyroI.transform.Find("Z").transform.GetChild(i).gameObject.SetActive(true);
+			}else{
+				GyroI.transform.Find("Z").transform.GetChild(i).gameObject.SetActive(false);
+			}
+		}
+	}
+
+	public int GetInterval(int detection){
+		if (detection < 4){
+			return 0;
+		}else if (detection < 12){
+			return 1;
+		}else if (detection < 20){
+			return 2;
+		}else if (detection == 20){
+			return 3;
+		}else if (detection > 36){
+			return 6;
+		}else if (detection > 28){
+			return 5;
+		}else{
+			return 4;
+		}
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -266,9 +317,14 @@ public class Controller : MonoBehaviour {
 			disconnectRequest = false;
 		}
 		motion = DetectMotion();
+		SetSensorUI();
 		if (motions.Count > 0){
 			networkView.RPC("ReceiveDetection",RPCMode.Server,id,motions[0]);
 			motions.RemoveAt(0);
 		}
+		// if(maintainConnection){
+		// 	networkView.RPC("ResponseConnection",RPCMode.Server,id);
+		// 	maintainConnection = false;
+		// }
 	}
 }

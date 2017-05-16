@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: c919ebd9e9603ff4799c413765a63e6b
+timeCreated: 1494887191
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: CW Ciung Wanara
+  fontNames:
+  - CW Ciung Wanara
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -19,6 +19,10 @@ public class GamePlay : MonoBehaviour {
 	private const int LEFT = 12;
 	private const int RIGHT = 13;
 	private const int TO_DIFFICULTY = 14;
+	private const int ROOM = 15;
+	private const int READY = 16;
+	private const int PLAYMULTI = 17;
+	private const int TO_HAND = 18;
 	private const int MAX_PLAYER = 7;
 
 	private int highlighted;
@@ -30,7 +34,7 @@ public class GamePlay : MonoBehaviour {
 	private int master = -1;
 	private bool isPlaying = false;
 
-	public GameObject Menu, Mode, Song, Difficulty, Hand, MenuB, ModeB, SongB, DifficultyB, HandB, Dance;
+	public GameObject Menu, Mode, Song, Difficulty, Hand, MenuB, ModeB, SongB, DifficultyB, HandB, Dance, Room;
 	public Text IP, Master;
 
 
@@ -142,18 +146,31 @@ public class GamePlay : MonoBehaviour {
             	hand = 2;
             	//
             	// isPlaying = true;
-            	Dance.SetActive(true);
 				Thread.Sleep(1000);	
-            	if (mode == 1)
+            	if (mode == 1){
+            		Dance.SetActive(true);
             		Dance.GetComponent<PlayDance>().Play(1,difficulty,hand);
-            	else if (mode == 1)
-            		Dance.GetComponent<PlayDance>().Play(connector.PlayerCount(),difficulty,hand);
+            	}
+            	else if (mode == 2)
+            		Hand.SetActive(false);
+            		Room.SetActive(true);
+            		// Dance.GetComponent<PlayDance>().Play(connector.PlayerCount(),difficulty,hand);
             	break;
             case TO_DIFFICULTY:
             	hand = 0;
             	Hand.SetActive(false);
             	Difficulty.SetActive(true);
             	highlighted = 8;
+            	break;
+            case ROOM:
+            	break;
+            case PLAYMULTI:
+            	Dance.SetActive(true);
+            	Dance.GetComponent<PlayDance>().Play(connector.PlayerCount(),difficulty,hand);
+            	break;
+            case TO_HAND:
+            	Room.SetActive(false);
+            	Hand.SetActive(true);
             	break;
         }
 	}

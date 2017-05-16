@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\DanceHmm.cs" />
      <Compile Include="Assets\Scripts\GamePlay.cs" />
      <Compile Include="Assets\Scripts\PlayDance.cs" />
+     <Compile Include="Assets\Scripts\Room.cs" />
      <None Include="Assets\Scripts\Accord.Math.3.4.2-alpha\lib\net35\Accord.Math.xml" />
      <None Include="Assets\Scripts\Accord.Statistics.3.4.2-alpha\lib\net35\Accord.Statistics.xml" />
      <None Include="Assets\Scripts\Accord.3.4.2-alpha\lib\net35\Accord.xml" />

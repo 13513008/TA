@@ -9,7 +9,8 @@ public class Connector : MonoBehaviour {
 	private static  int port, maxPlayer, master;
 	private static NetworkView networkView;
 	private static bool status, checkConnection, maintainConnections;
-	private static bool[] isReceiving, connection;
+	private static bool[] isReceiving;
+	private static int[] connection;
 	private int requestDetect = 0;
 	private static string[] names;
 	private static List<string>[] messages;
@@ -36,18 +37,18 @@ public class Connector : MonoBehaviour {
 		availableId = new List<int>();
 		status = true;
 		isReceiving = new bool[maxPlayer];
-		connection = new bool[maxPlayer];
+		connection = new int[maxPlayer];
 		for (int i = 0; i < maxPlayer; i++){
 			availableId.Add(i);
 			isReceiving[i] = false;
-			connection[i] = false;
+			connection[i] = 4;
 		}
 		checkConnection = false;
 		maintainConnections = false;
 		priority = new List<int>();
 		motions = new List<double[]>[maxPlayer];
 		var maintainConnection = new Thread(() => MaintainConnection());
-		// maintainConnection.Start();
+		maintainConnection.Start();
 	}
 
 	public void StopServer() {
@@ -136,7 +137,7 @@ public class Connector : MonoBehaviour {
 		messages[id] = new List<string>();
 		motions[id] = new List<double[]>();
 		availableId.RemoveAt(0);
-		connection[id] = true;
+		connection[id] = 0;
 		priority.Add(id);
 		networkView.RPC("RegisterClient",RPCMode.Others,id,ip_);
 		SetMasterServer();
@@ -154,6 +155,7 @@ public class Connector : MonoBehaviour {
 		// 	networkView.RPC("DetectMotion",RPCMode.Others,master);
 		// }
 		for(int i = 0; i < priority.Count; i++){
+			Debug.Log(priority[i]);
 			isReceiving[i] = true;
 		}
 		networkView.RPC("DetectMotion",RPCMode.Others,time);
@@ -221,9 +223,12 @@ public class Connector : MonoBehaviour {
 		networkView.RPC("Vibrate",RPCMode.Others,id);
 	}
 
-	public void SetColor(Color c, int id){
-		networkView.RPC("SetColor",RPCMode.Others,c,id);
+	public void SetPlayerColor(float r, float g, float b, float a, int id){
+		networkView.RPC("SetColor",RPCMode.Others, r, g, b, a,id);
 	}
+
+	[RPC]
+	public void SetColor(float r, float g, float b, float a, int id_){}
 
 	public static void DisconnectClient(int id){
 		names[id] = "";
@@ -232,15 +237,16 @@ public class Connector : MonoBehaviour {
 		availableId.Add(id);
 		priority.Remove(id);
 		isReceiving[id] = false;
+		connection[id] = 4;
 		SetMasterServer();
 	}
 
 	public static void MaintainConnection() {
 		while (status){
+			checkConnection = true;
 			Thread.Sleep(3000);
 			maintainConnections = true;
-			Thread.Sleep(3000);
-			checkConnection = true;
+			Thread.Sleep(1000);
 		}
 	}
 
@@ -258,21 +264,26 @@ public class Connector : MonoBehaviour {
 	[RPC]
 	public void Disconnected(int id_) {}
 
-	// public void CheckDisconnectedPlayer() {
-	// 	for(int i = 0; i < priority.Count; i++){
-	// 		Debug.Log(connection[priority[i]]);
-	// 		if(!connection[priority[i]])
-	// 			DisconnectClient(priority[i]);
-	// 		else{
-	// 			connection[priority[i]] = false;
-	// 		}
-	// 	}
-	// }
+	public void CheckDisconnectedPlayer() {
+		for(int i = 0; i < priority.Count; i++){
+			if(connection[priority[i]] != 0){
+				connection[priority[i]] += 1;
+				if (connection[priority[i]] == 4){
+					networkView.RPC("Disconnected",RPCMode.Others,priority[i]);
+					DisconnectClient(priority[i]);
+				}
+			}
+			else{
+				connection[priority[i]] = 1;
+			}
+		}
+		maintainConnections = false;
+	}
 
 	[RPC]
 	public void ResponseConnection(int id_){
 		if(id_ != -1){
-			connection[id_] = true;
+			connection[id_] = 0;
 		}
 	}
 
@@ -287,11 +298,11 @@ public class Connector : MonoBehaviour {
 			GetMotionDetect(requestDetect);
 			requestDetect = 0;
 		}
-		// if(checkConnection){
-		// 	CheckConnection();
-		// }
-		// if(maintainConnections){
-		// 	CheckDisconnectedPlayer();
-		// }
+		if(checkConnection){
+			CheckConnection();
+		}
+		if(maintainConnections){
+			CheckDisconnectedPlayer();
+		}
 	}
 }
